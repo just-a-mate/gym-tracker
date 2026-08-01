@@ -1,7 +1,6 @@
-const API_BASE = "https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/api/en";
+const IMG_BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises";
 const STORAGE_KEY = "gymtracker_lastday";
 const CHECK_KEY = "gymtracker_checks";
-const gifCache = {};
 
 function getNextDay() {
   const last = localStorage.getItem(STORAGE_KEY);
@@ -36,21 +35,8 @@ document.getElementById("start-btn").onclick = () => {
   updateFinishBtn();
 };
 
-async function preloadGif(ex, imgEl) {
-  const cacheKey = ex.muscle + ":" + ex.name;
-  if (gifCache[cacheKey]) { imgEl.src = gifCache[cacheKey]; return; }
-  try {
-    const res = await fetch(`${API_BASE}/muscles/${ex.muscle}.json`);
-    const data = await res.json();
-    const match = data.exercises.find(e =>
-      e.name.toLowerCase().includes(ex.name.toLowerCase()) ||
-      ex.name.toLowerCase().includes(e.name.toLowerCase())
-    );
-    if (match) {
-      gifCache[cacheKey] = match.gifUrl;
-      imgEl.src = match.gifUrl;
-    }
-  } catch (e) { /* thumb just stays blank, no crash */ }
+function imgUrl(ex, frame) {
+  return `${IMG_BASE}/${ex.exId}/${frame}.jpg`;
 }
 
 function renderList(container, exercises, prefix) {
@@ -60,7 +46,7 @@ function renderList(container, exercises, prefix) {
     card.className = "exercise-card";
     card.innerHTML = `
       <input type="checkbox" data-key="${prefix}${i}">
-      <img class="thumb" alt="${ex.name}">
+      <img class="thumb" src="${imgUrl(ex, 0)}" alt="${ex.name}" onerror="this.style.opacity=0.2">
       <div class="info">
         <b>${ex.name}</b>
         <span class="sets">${ex.sets} sets</span>
@@ -68,7 +54,6 @@ function renderList(container, exercises, prefix) {
     `;
     const checkbox = card.querySelector("input");
     const thumb = card.querySelector(".thumb");
-    preloadGif(ex, thumb);
 
     checkbox.onchange = () => {
       card.classList.toggle("done", checkbox.checked);
@@ -78,11 +63,20 @@ function renderList(container, exercises, prefix) {
       updateFinishBtn();
     };
 
+    let frame = 0;
+    let animInterval = null;
     thumb.onclick = () => {
-      if (!thumb.src) return;
-      modalGif.src = thumb.src;
       modalOverlay.style.display = "flex";
+      modalGif.src = imgUrl(ex, 0);
+      frame = 0;
+      clearInterval(animInterval);
+      animInterval = setInterval(() => {
+        frame = frame === 0 ? 1 : 0;
+        modalGif.src = imgUrl(ex, frame);
+      }, 700);
     };
+    modalOverlay._stopAnim = () => clearInterval(animInterval);
+
     container.appendChild(card);
   });
 }
@@ -97,4 +91,7 @@ finishBtn.onclick = () => {
   location.reload();
 };
 
-modalOverlay.onclick = () => { modalOverlay.style.display = "none"; };
+modalOverlay.onclick = () => {
+  modalOverlay.style.display = "none";
+  if (modalOverlay._stopAnim) modalOverlay._stopAnim();
+};
