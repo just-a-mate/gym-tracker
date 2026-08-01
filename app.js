@@ -63,19 +63,51 @@ function renderList(container, exercises, prefix) {
       updateFinishBtn();
     };
 
-    let frame = 0;
-    let animInterval = null;
+let activeAnimInterval = null;
+
+function renderList(container, exercises, prefix) {
+  container.innerHTML = "";
+  exercises.forEach((ex, i) => {
+    const card = document.createElement("div");
+    card.className = "exercise-card";
+    card.innerHTML = `
+      <input type="checkbox" data-key="${prefix}${i}">
+      <img class="thumb" src="${imgUrl(ex, 0)}" alt="${ex.name}" onerror="this.style.opacity=0.2">
+      <div class="info">
+        <b>${ex.name}</b>
+        <span class="sets">${ex.sets} sets</span>
+      </div>
+    `;
+    const checkbox = card.querySelector("input");
+    const thumb = card.querySelector(".thumb");
+
+    checkbox.onchange = () => {
+      card.classList.toggle("done", checkbox.checked);
+      const checks = getChecks();
+      checks[checkbox.dataset.key] = checkbox.checked;
+      setChecks(checks);
+      updateFinishBtn();
+    };
+
     thumb.onclick = () => {
+      clearInterval(activeAnimInterval);
       modalOverlay.style.display = "flex";
+      let frame = 0;
       modalGif.src = imgUrl(ex, 0);
-      frame = 0;
-      clearInterval(animInterval);
-      animInterval = setInterval(() => {
+      activeAnimInterval = setInterval(() => {
         frame = frame === 0 ? 1 : 0;
         modalGif.src = imgUrl(ex, frame);
       }, 700);
     };
-    modalOverlay._stopAnim = () => clearInterval(animInterval);
+
+    container.appendChild(card);
+  });
+}
+
+modalOverlay.onclick = () => {
+  modalOverlay.style.display = "none";
+  clearInterval(activeAnimInterval);
+};
 
     container.appendChild(card);
   });
