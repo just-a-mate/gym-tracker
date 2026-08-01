@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gym Tracker</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="start-screen">
+      <h1>Gym Tracker</h1>
+      <p id="next-day-label"></p>
+      <button id="start-btn">شروع امروز</button>
+    </div>
+
+    <div id="workout-screen" style="display:none">
+      <h2 id="day-title"></h2>
+      <h3>تمرین‌های اصلی</h3>
+      <div id="main-list"></div>
+      <h3>تمرین‌های اضافه (اختیاری)</h3>
+      <div id="extra-list"></div>
+      <button id="finish-btn" disabled>پایان امروز</button>
+    </div>
+  </div>
+
+  <div id="modal" style="display:none">
+    <div id="modal-content">
+      <span id="modal-close">✕</span>
+      <h3 id="modal-name"></h3>
+      <img id="modal-gif" src="" alt="">
+      <p id="modal-sets"></p>
+      <ol id="modal-instructions"></ol>
+    </div>
+  </div>
+
+<script src="plan.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
