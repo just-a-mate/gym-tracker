@@ -1,0 +1,32 @@
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, sans-serif;
+  background: #111; color: #eee; margin: 0; padding: 16px;
+}
+h1 { text-align: center; }
+#start-btn, #finish-btn {
+  width: 100%; padding: 16px; font-size: 18px;
+  background: #22c55e; color: #000; border: none; border-radius: 12px;
+  margin-top: 20px;
+}
+#finish-btn:disabled { background: #444; color: #888; }
+.exercise-card {
+  display: flex; align-items: center; gap: 12px;
+  background: #1e1e1e; border-radius: 12px; padding: 12px; margin-bottom: 10px;
+}
+.exercise-card input[type="checkbox"] { width: 24px; height: 24px; }
+.exercise-card .info { flex: 1; }
+.exercise-card .info b { display: block; }
+.exercise-card .sets { color: #aaa; font-size: 14px; }
+.exercise-card.done { opacity: 0.5; }
+#modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center; z-index: 10;
+}
+#modal-content {
+  background: #1e1e1e; padding: 16px; border-radius: 16px;
+  max-width: 90%; max-height: 90%; overflow-y: auto; text-align: center;
+}
+#modal-gif { width: 100%; border-radius: 12px; margin: 10px 0; }
+#modal-close { position: absolute; top: 10px; right: 20px; font-size: 24px; }
+#modal-instructions { text-align: right; }
