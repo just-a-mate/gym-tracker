@@ -1,5 +1,6 @@
 // Gym Tracker — App Logic
 // Real animated GIFs from ExerciseGymGifsDB, loaded once, cached, matched locally (no per-click fetch = no hangs).
+// Supports per-exercise "aliases" for names not found under their common English label.
 
 const GIF_INDEX_URL = "https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/api/en/exercises.json";
 const GIF_BASE = "https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0";
@@ -9,7 +10,6 @@ const INDEX_CACHE_KEY = "gymtracker_gifindex_v1";
 const INDEX_CACHE_TIME_KEY = "gymtracker_gifindex_time_v1";
 const INDEX_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 1 week
 
-let activeAnimTimer = null;
 let gifIndex = null;
 let currentDay = null;
 
@@ -38,27 +38,37 @@ async function loadGifIndex() {
     localStorage.setItem(INDEX_CACHE_KEY, JSON.stringify(gifIndex));
     localStorage.setItem(INDEX_CACHE_TIME_KEY, String(Date.now()));
   } catch (e) {
-    gifIndex = (cached ? JSON.parse(cached) : []); // stale cache better than nothing
+    gifIndex = cached ? JSON.parse(cached) : [];
   }
   return gifIndex;
 }
 
+// ---------- matching ----------
 function normalize(s) {
   return s.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(" ").filter(Boolean);
 }
 
-function findGifEntry(name, index) {
-  const target = normalize(name);
+function scoreMatch(target, label) {
+  const t = normalize(target), l = normalize(label);
+  const overlap = t.filter(w => l.includes(w)).length;
+  const wordScore = overlap / Math.max(t.length, l.length);
+  const substrBonus = label.toLowerCase().includes(target.toLowerCase()) ? 0.3 : 0;
+  return wordScore + substrBonus;
+}
+
+function findGifEntry(ex, index) {
+  const candidates = [ex.nameEn, ...(ex.aliases || [])];
   let best = null, bestScore = 0;
-  for (const ex of index) {
-    const label = ex.name || ex.title || "";
-    if (!label) continue;
-    const words = normalize(label);
-    const overlap = target.filter(w => words.includes(w)).length;
-    const score = overlap / Math.max(target.length, words.length);
-    if (score > bestScore) { bestScore = score; best = ex; }
+  for (const name of candidates) {
+    for (const entry of index) {
+      const label = entry.name || entry.title || "";
+      if (!label) continue;
+      const score = scoreMatch(name, label);
+      if (score > bestScore) { bestScore = score; best = entry; }
+    }
+    if (bestScore >= 0.5) break;
   }
-  return bestScore >= 0.45 ? best : null;
+  return bestScore >= 0.4 ? best : null;
 }
 
 function resolveGifUrl(entry) {
@@ -103,12 +113,11 @@ document.getElementById("start-btn").onclick = async () => {
 };
 
 function openAnimation(ex) {
-  clearTimeout(activeAnimTimer);
   modalOverlay.style.display = "flex";
   modalTitle.textContent = ex.nameEn;
   modalGif.style.display = "block";
   modalGif.src = "";
-  const entry = findGifEntry(ex.nameEn, gifIndex || []);
+  const entry = findGifEntry(ex, gifIndex || []);
   const url = resolveGifUrl(entry);
   if (url) {
     modalGif.src = url;
@@ -135,7 +144,7 @@ function renderList(container, exercises, prefix) {
     thumb.onerror = () => { thumb.style.display = "none"; };
 
     function paintThumb(exercise) {
-      const entry = findGifEntry(exercise.nameEn, gifIndex || []);
+      const entry = findGifEntry(exercise, gifIndex || []);
       const url = resolveGifUrl(entry);
       if (url) { thumb.style.display = "block"; thumb.src = url; }
       else { thumb.style.display = "none"; }

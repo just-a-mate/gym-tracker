@@ -1,5 +1,6 @@
 // Gym Tracker — Workout Plan Data
 // 5-day rotation, required + optional exercises, sets/reps, alternatives, Persian labels, per-day notes.
+// "aliases" = extra search terms tried if the main name isn't found in the GIF database.
 
 const PLAN = [
   {
@@ -11,7 +12,8 @@ const PLAN = [
       { nameEn: "Barbell Bench Press", nameFa: "پرس سینه هالتر", sets: 3, reps: "6-10", alt: "Machine Chest Press" },
       { nameEn: "Incline Dumbbell Press", nameFa: "پرس بالا سینه دمبل", sets: 3, reps: "8-12", alt: "Incline Machine Press" },
       { nameEn: "Cable Fly", nameFa: "فلای سیم‌کش", sets: 2, reps: "10-15", alt: "Pec Deck" },
-      { nameEn: "Rope Triceps Pushdown", nameFa: "پشت بازو سیم‌کش طنابی", sets: 3, reps: "10-15", alt: "Straight-Bar Pushdown" },
+      { nameEn: "Rope Triceps Pushdown", nameFa: "پشت بازو سیم‌کش طنابی", sets: 3, reps: "10-15", alt: "Straight-Bar Pushdown",
+        aliases: ["Triceps Pushdown", "Cable Rope Pushdown", "Cable Triceps Pushdown", "Rope Pushdown"] },
       { nameEn: "Overhead Cable Triceps Extension", nameFa: "پشت بازو بالای سر سیم‌کش", sets: 2, reps: "10-15", alt: "Dumbbell Overhead Extension" }
     ],
     extra: [
@@ -26,9 +28,11 @@ const PLAN = [
     note: "برای فرد سنگین‌وزن، Chest-Supported Row عمداً جلوتر از Bent-Over Row گذاشته شده تا فشار روی کمر کمتر شود.",
     main: [
       { nameEn: "Lat Pulldown", nameFa: "لت سیم‌کش از بالا", sets: 3, reps: "8-12", alt: "Assisted Pull-Up" },
-      { nameEn: "Chest-Supported Row", nameFa: "روئینگ با تکیه‌گاه سینه", sets: 3, reps: "8-12", alt: "Seated Cable Row" },
+      { nameEn: "Chest-Supported Row", nameFa: "روئینگ با تکیه‌گاه سینه", sets: 3, reps: "8-12", alt: "Seated Cable Row",
+        aliases: ["Seal Row", "Incline Bench Row", "Chest Supported Dumbbell Row", "T-Bar Row"] },
       { nameEn: "One-Arm Dumbbell Row", nameFa: "زیربغل دمبل تک‌دست", sets: 2, reps: "8-12", alt: "One-Arm Cable Row" },
-      { nameEn: "Face Pull", nameFa: "فیس پول", sets: 2, reps: "12-15", alt: "Reverse Pec Deck" },
+      { nameEn: "Face Pull", nameFa: "فیس پول", sets: 2, reps: "12-15", alt: "Reverse Pec Deck",
+        aliases: ["Cable Face Pull", "Rope Face Pull"] },
       { nameEn: "Dumbbell Curl", nameFa: "جلو بازو دمبل", sets: 3, reps: "8-12", alt: "EZ-Bar Curl" },
       { nameEn: "Hammer Curl", nameFa: "جلو بازو چکشی", sets: 2, reps: "10-15", alt: "Rope Cable Curl" }
     ],
@@ -46,7 +50,8 @@ const PLAN = [
       { nameEn: "Leg Press", nameFa: "پرس پا", sets: 3, reps: "8-12", alt: "Hack Squat" },
       { nameEn: "Romanian Deadlift", nameFa: "ددلیفت رومانیایی", sets: 3, reps: "8-12", alt: "Seated Leg Curl" },
       { nameEn: "Leg Extension", nameFa: "جلو پا دستگاه", sets: 2, reps: "10-15", alt: "Spanish Squat" },
-      { nameEn: "Seated Leg Curl", nameFa: "پشت پا دستگاه نشسته", sets: 2, reps: "10-15", alt: "Lying Leg Curl" },
+      { nameEn: "Seated Leg Curl", nameFa: "پشت پا دستگاه نشسته", sets: 2, reps: "10-15", alt: "Lying Leg Curl",
+        aliases: ["Leg Curl Machine", "Seated Hamstring Curl"] },
       { nameEn: "Standing Calf Raise", nameFa: "ساق پا ایستاده", sets: 3, reps: "10-15", alt: "Leg Press Calf Raise" },
       { nameEn: "Cable Crunch", nameFa: "کرانچ سیم‌کش", sets: 3, reps: "10-15", alt: "Machine Ab Crunch" },
       { nameEn: "Dead Bug", nameFa: "ددباگ", sets: 2, reps: "8-12 / side", alt: "Bird Dog" }
@@ -64,7 +69,8 @@ const PLAN = [
     main: [
       { nameEn: "Seated Dumbbell Shoulder Press", nameFa: "پرس سرشانه دمبل نشسته", sets: 3, reps: "8-12", alt: "Machine Shoulder Press" },
       { nameEn: "Dumbbell Lateral Raise", nameFa: "نشر جانب دمبل", sets: 3, reps: "12-15", alt: "Cable Lateral Raise" },
-      { nameEn: "Reverse Pec Deck", nameFa: "فلای معکوس دستگاه", sets: 2, reps: "12-15", alt: "Cable Rear-Delt Fly" },
+      { nameEn: "Reverse Pec Deck", nameFa: "فلای معکوس دستگاه", sets: 2, reps: "12-15", alt: "Cable Rear-Delt Fly",
+        aliases: ["Rear Delt Fly Machine", "Reverse Fly Machine", "Machine Reverse Fly", "Rear Delt Machine Fly"] },
       { nameEn: "Incline Machine Chest Press", nameFa: "پرس سینه بالا سینه دستگاه", sets: 3, reps: "8-12", alt: "Incline Dumbbell Press" },
       { nameEn: "Push-Up", nameFa: "شنا", sets: 2, reps: "8-15", alt: "Machine Chest Press" }
     ],
@@ -84,8 +90,10 @@ const PLAN = [
       { nameEn: "Machine Chest Press", nameFa: "پرس سینه دستگاه", sets: 3, reps: "8-12", alt: "Dumbbell Bench Press" },
       { nameEn: "Dumbbell Lateral Raise", nameFa: "نشر جانب دمبل", sets: 2, reps: "12-15", alt: "Cable Lateral Raise" },
       { nameEn: "EZ-Bar Curl", nameFa: "جلو بازو هالتر EZ", sets: 2, reps: "8-12", alt: "Dumbbell Curl" },
-      { nameEn: "Rope Triceps Pushdown", nameFa: "پشت بازو طنابی", sets: 2, reps: "10-15", alt: "Straight-Bar Pushdown" },
-      { nameEn: "Plank", nameFa: "پلانک", sets: 3, reps: "30-60 sec", alt: "Dead Bug" }
+      { nameEn: "Rope Triceps Pushdown", nameFa: "پشت بازو طنابی", sets: 2, reps: "10-15", alt: "Straight-Bar Pushdown",
+        aliases: ["Triceps Pushdown", "Cable Rope Pushdown", "Cable Triceps Pushdown", "Rope Pushdown"] },
+      { nameEn: "Plank", nameFa: "پلانک", sets: 3, reps: "30-60 sec", alt: "Dead Bug",
+        aliases: ["Front Plank", "Forearm Plank", "Elbow Plank"] }
     ],
     extra: [
       { nameEn: "Walking Lunges", nameFa: "لانج راه‌رفتنی", sets: 2, reps: "10 / leg", alt: "Reverse Lunges" },
