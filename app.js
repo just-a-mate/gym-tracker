@@ -1,6 +1,7 @@
 // Gym Tracker — App Logic
 // Real animated GIFs from ExerciseGymGifsDB, loaded once, cached, matched locally (no per-click fetch = no hangs).
-// Supports per-exercise "aliases" for names not found under their common English label.
+// ALIASES is a central lookup by exercise name — works whether the exercise is shown as
+// a main/extra item OR as a swapped-in "Alt" (fixes aliases not applying to alt names).
 
 const GIF_INDEX_URL = "https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/api/en/exercises.json";
 const GIF_BASE = "https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0";
@@ -9,6 +10,18 @@ const CHECK_KEY = "gymtracker_checks_v2";
 const INDEX_CACHE_KEY = "gymtracker_gifindex_v1";
 const INDEX_CACHE_TIME_KEY = "gymtracker_gifindex_time_v1";
 const INDEX_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 1 week
+
+const ALIASES = {
+  "Rope Triceps Pushdown": ["Triceps Pushdown", "Cable Rope Pushdown", "Cable Triceps Pushdown", "Rope Pushdown"],
+  "Chest-Supported Row": ["Seal Row", "Incline Bench Row", "Prone Row", "T-Bar Row", "Chest Supported Dumbbell Row"],
+  "Reverse Pec Deck": ["Rear Delt Fly Machine", "Reverse Fly Machine", "Machine Reverse Fly", "Bent Over Rear Delt Fly", "Dumbbell Rear Delt Fly", "Reverse Fly"],
+  "Pec Deck": ["Butterfly", "Machine Fly", "Seated Machine Chest Fly", "Cable Fly", "Chest Fly Machine"],
+  "Machine Ab Crunch": ["Ab Crunch Machine", "Seated Crunch Machine", "Crunch Machine", "Crunch", "Sit-Up"],
+  "Bird Dog": ["Superman", "Plank", "Quadruped"],
+  "Plank": ["Front Plank", "Forearm Plank", "Elbow Plank"],
+  "Face Pull": ["Cable Face Pull", "Rope Face Pull"],
+  "Seated Leg Curl": ["Leg Curl Machine", "Seated Hamstring Curl", "Lying Leg Curl"]
+};
 
 let gifIndex = null;
 let currentDay = null;
@@ -57,7 +70,7 @@ function scoreMatch(target, label) {
 }
 
 function findGifEntry(ex, index) {
-  const candidates = [ex.nameEn, ...(ex.aliases || [])];
+  const candidates = [ex.nameEn, ...(ALIASES[ex.nameEn] || []), ...(ex.aliases || [])];
   let best = null, bestScore = 0;
   for (const name of candidates) {
     for (const entry of index) {
